@@ -2,7 +2,7 @@
 const API_URL = "https://aalesin.amocrm.ru/api/v4/leads";
 // 01.09.2024
 const LONG_TIME_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjUwMDcwMjVhMGQzMWViZDY0NzU5YTdkNmZmZTQwMTA2M2EwYjI5NjkzODg3OTQyZjZjMjI4ZWVlNzQ0OTIyMTljNTExM2IyYjM0OGFlZWFkIn0.eyJhdWQiOiI2OWU0NWUzZC04NWY2LTQyZTctODZjMi0zMzI2MzNhODA2MTgiLCJqdGkiOiI1MDA3MDI1YTBkMzFlYmQ2NDc1OWE3ZDZmZmU0MDEwNjNhMGIyOTY5Mzg4Nzk0MmY2YzIyOGVlZTc0NDkyMjE5YzUxMTNiMmIzNDhhZWVhZCIsImlhdCI6MTcyMTIxODQ2MCwibmJmIjoxNzIxMjE4NDYwLCJleHAiOjE3MjUxNDg4MDAsInN1YiI6IjExMjg0Mzk4IiwiZ3JhbnRfdHlwZSI6IiIsImFjY291bnRfaWQiOjMxODUzMjA2LCJiYXNlX2RvbWFpbiI6ImFtb2NybS5ydSIsInZlcnNpb24iOjIsInNjb3BlcyI6WyJjcm0iLCJmaWxlcyIsImZpbGVzX2RlbGV0ZSIsIm5vdGlmaWNhdGlvbnMiLCJwdXNoX25vdGlmaWNhdGlvbnMiXSwiaGFzaF91dWlkIjoiZmFiMWRiOTktYjk4OS00OGRlLTk3ZDctZWU5ZTQ5ZjFkY2IxIn0.jjPOtgaaAoW0MdawDkkDLArhJvrK1y5vW8oxRupFWXgUFzXgEbre23l_Cqc56S_RU0ZYAWRmwaFJcDqrZB3lLZ3hQoQpHxj5qTg9jmOLXrR3sg3_ts9yTFoUSXa5WEo4e1iDfmI_lcAUww0ZwqJhKPsELObmvQCkPGW-0ktpLYVM3CY4PHd-2Egf32ZvY9z5aOZxtL_bCewXHy7rpYaLblPv5du7Bojadg-oZGmhYA029Djd5hv1pMnlGH9DrLEkCFHcetWe7v9kIkRKFyiH2wzd5xgEjutP0e9tSnbip10q5Ffibzfs4DbIxzwpVcQGDp3W2QovnEA7fywY5jxZCA";
-
+const CUSTOM_FIELD_ID = 740733;
 if (empty($post = file_get_contents('php://input'))) {
     die();
 }
@@ -12,18 +12,19 @@ $output = ['success' => true];
 try {
     preparePostData($post);
     $body = [];
-    $boolean = $post['boolean'];
+    $boolean = $post['boolean'] == 1 ? 'true' : 'false';
     unset($post['boolean']);
+    $post['custom_fields_values'][] = [
+        'field_id' => CUSTOM_FIELD_ID,
+        'values' => [
+            [
+                'value' => strval($boolean) 
+            ]
+        ]
+    ];
     $body[] = $post;
     $res = sendData(json_encode($body, JSON_NUMERIC_CHECK));
-    // $body['custom_fields_values'][] = [
-    //     'field_id' => CUSTOM_FIELD_ID,
-    //     'values' => [
-    //         [
-    //             'value' => $boolean
-    //         ]
-    //     ]
-    // ];
+    
     die(json_encode(compact('res', 'boolean', 'body'), JSON_NUMERIC_CHECK));
 } catch (Exception $e) {
     $output = ['success' => false, 'e' => $e->getMessage()];
@@ -71,6 +72,5 @@ function sendData($post)
     $response = curl_exec($curl);
 
     curl_close($curl);
-    echo $response;
-
+    return $response;
 }
