@@ -24,5 +24,27 @@ const send = async () => {
         data[input.id] = input.value;
     }
 
-    console.log(data)
+    await postData('/api/deal.php', data);
+}
+
+const postData = async (url, body) => {
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+        }
+    }
+    if (body) {
+        options.body = JSON.stringify(body)
+    }
+
+    try {
+        const res = await fetch(url, options)
+        if (!res.ok) {
+            alert('Ошибка при получении данных');
+        }
+        return await res.json()
+    } catch (e) {
+        alert('Ошибка при получении данных');
+    }
 }
