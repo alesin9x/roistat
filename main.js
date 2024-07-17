@@ -1,8 +1,24 @@
 let boolean = false;
+let currentSeconds = 0;
+const endSeconds = 3;
+
+const updateTime = () => {
+    currentSeconds++;
+}
+
+// Запускаем таймер
+const intervalId = setInterval(updateTime, 1000); // 1000 миллисекунд = 1 секунда
+
+// Очистка таймера после завершения
+setTimeout(() => {
+    clearInterval(intervalId);
+    boolean = true;
+}, endSeconds * 1000);
+
 
 const send = async () => {
     const inputs = document.querySelectorAll("input");
-    const data = {boolean};
+    const data = { boolean };
 
     for (const input of inputs) {
         data[input.id] = input.value;
