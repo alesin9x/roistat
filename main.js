@@ -1,6 +1,6 @@
 let boolean = false;
 let currentSeconds = 0;
-const endSeconds = 3;
+const endSeconds = 30;
 
 const updateTime = () => {
     currentSeconds++;
